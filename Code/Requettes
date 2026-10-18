@@ -1,0 +1,115 @@
+/*Liste de l’ensemble des agences*/
+SELECT Id_Agence, Adresse_postale 
+FROM Agence;
+
+/*Liste de l'ensemble du personnel technique de l'agence de Bordeaux*/ 
+SELECT DISTINCT p.Nom_agent, p.Prenom_agent 
+FROM Agent  p 
+JOIN Agence a ON p.Id_Agence = a.Id_Agence  
+JOIN Ville v ON a.Id_Ville = v.Id_Ville  
+JOIN Capteur c ON v.Id_Ville = c.Id_Ville  
+JOIN assistant_technique t ON c.ID_AT= t.ID_AT 
+WHERE v.Nom_ville = 'Bordeaux' ; 
+
+/* Nombre total de capteurs déployés*/
+SELECT c.Id_Capteur  
+FROM Capteur c ; 
+
+/*Liste des rapports publiés entre 2018 et 2022*/
+SELECT r.Titre_rapport, r.Date_rapport 
+FROM Rapport r 
+WHERE r.Date_rapport BETWEEN '2018-01-01' AND '2022-12-31'; 
+
+/*Concentrations de CH4 (en ppm) dans les régions « Ile-de-France », « Bretagne » et 
+« Occitanie » en mai et juin 2023*/
+SELECT m.Valeur_mesure, e.Nom_region, m.Date_mesure 
+FROM Nature_Gaz n 
+JOIN Gaz g ON g.Id_Nature_Gaz = n.Id_Nature_Gaz 
+JOIN Mesurer k ON g.Id_Gaz = k.Id_Gaz 
+JOIN Capteur c ON k.Id_Capteur = c.Id_Capteur 
+JOIN Mesures m ON c.Id_Capteur = m.Id_Capteur 
+JOIN Ville v ON c.Id_Ville = v.Id_Ville 
+JOIN Region e ON v.Id_Region = e.Id_Region 
+WHERE e.Nom_region IN ('Ile-de-France', 'Bretagne', 'Occitanie') 
+AND g.Formule_gaz = 'CH4' 
+AND m.Date_mesure BETWEEN '2023-05-01' AND '2023-06-30' 
+
+/*Liste des noms des agents techniques maintenant des capteurs concernant les gaz à 
+effet de serre provenant de l’industrie (GESI)*/
+SELECT p.Prenom_agent, p.Nom_agent 
+FROM Agent p 
+JOIN Agence a ON p.Id_Agence = a.Id_Agence 
+JOIN Ville v ON a.Id_Ville = v.Id_Ville 
+JOIN Capteur c ON v.Id_Ville = c.Id_Ville 
+JOIN Mesurer k ON c.Id_Capteur = k.Id_Capteur 
+JOIN Gaz g ON k.Id_Gaz = g.Id_Gaz 
+JOIN Nature_Gaz n ON g.Id_Nature_Gaz = n.Id_Nature_Gaz  
+WHERE n.Nature_gaz = 'GESI'; 
+
+/*Titres et dates des rapports concernant des concentrations de NH3*/
+SELECT r.Titre_rapport, r.Date_rapport 
+FROM Rapport r 
+JOIN Mesures m ON r.Id_Rapport = m.Id_Rapport 
+JOIN Mesurer k ON m.Id_Capteur = k.Id_Capteur 
+JOIN Gaz g ON k.Id_Gaz = g.Id_Gaz 
+WHERE g.Formule_gaz = 'NH3'; 
+
+/*Mois où la concentration de HFC a été la moins importante pour chaque région*/
+SELECT e.nom_region, MONTH(m.Date_mesure) AS Mois, MIN(m.Valeur_mesure) AS Valeur_min 
+FROM Mesures m  
+JOIN Capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN Mesurer k ON c.Id_Capteur = k.Id_Capteur 
+JOIN Gaz g ON k.Id_Gaz = g.Id_Gaz 
+JOIN Ville v ON c.Id_ville = v.Id_ville 
+JOIN region e ON v.Id_region = e.Id_region 
+WHERE g.Formule_gaz = 'HFC'  
+GROUP BY MONTH(m.Date_mesure), (e.Nom_region); 
+
+/*Moyenne des concentrations (en ppm) dans la région « Ile-de-France » en 2020, pour 
+chaque gaz étudié*/
+SELECT g.Nom_gaz, AVG(Valeur_mesure) as Moyenne_mesure 
+FROM Gaz g 
+JOIN Mesurer k ON g.Id_Gaz = k.Id_Gaz  
+JOIN Mesures m ON k.Id_Capteur = m.Id_Capteur 
+JOIN Capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN Ville v ON c.Id_Ville = v.Id_Ville 
+JOIN Region e ON v.Id_Region = e.Id_Region 
+WHERE e.Nom_Region = 'Ile-de-France' AND YEAR(m.Date_mesure) = 2020 
+GROUP BY g.Nom_gaz; 
+
+/*Taux de productivité des agents administratifs de l'agence de Toulouse (le taux est 
+calculé en nombre de rapports écrits par mois en moyenne, sur la durée de leur contrat)*/ 
+SELECT ag.Nom_agent, ag.Prenom_agent,COUNT(r.Id_Rapport) AS 
+Total_Rapports_Ecrits,GREATEST(TIMESTAMPDIFF(MONTH, ag.Date_entree, COALESCE(ag.Date_sortie, 
+CURDATE())), 1) AS Mois_Travailles, 
+ROUND(COUNT(r.Id_Rapport) / GREATEST(TIMESTAMPDIFF(MONTH, ag.Date_entree, 
+COALESCE(ag.Date_sortie, CURDATE())), 1), 2) AS Taux_Productivite_Mensuel 
+FROM agent ag 
+JOIN agence a ON ag.Id_Agence = a.Id_Agence 
+JOIN ville v ON a.Id_Ville = v.Id_Ville 
+JOIN assistant_administratif ad ON ag.Id_Agent = ad.Id_Agent 
+LEFT JOIN rediger r ON ad.ID_AD = r.ID_AD 
+WHERE v.Nom_ville = 'Toulouse' 
+GROUP BY ag.Id_Agent, ag.Nom_agent, ag.Prenom_agent, ag.Date_entree, ag.Date_sortie;
+
+/*Liste des rapports contenant des données qui le concernent (on doit pouvoir donner 
+le nom du gaz en paramètre) pour un Gaz donné*/
+SET @Parametre_Gaz = 'Méthane';  
+SELECT DISTINCT r.Id_Rapport, r.Titre_rapport, r.Date_rapport 
+FROM rapport r 
+JOIN mesures m ON r.Id_Rapport = m.Id_Rapport 
+JOIN capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN mesurer mes ON c.Id_Capteur = mes.Id_Capteur 
+JOIN gaz g ON mes.Id_Gaz = g.Id_Gaz 
+WHERE g.Nom_gaz = @Parametre_Gaz; 
+
+/*Liste des régions dans lesquelles il y a plus de capteurs que de personnel d’agence*/ 
+SELECT g.Nom_gaz, ROUND(AVG(m.Valeur_mesure), 2) AS Moyenne_ppm 
+FROM mesures m 
+JOIN capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN ville v ON c.Id_Ville = v.Id_Ville 
+JOIN region r ON v.Id_Region = r.Id_Region 
+JOIN mesurer mes ON c.Id_Capteur = mes.Id_Capteur 
+JOIN gaz g ON mes.Id_Gaz = g.Id_Gaz 
+WHERE r.Nom_region = 'Île-de-France' AND YEAR(m.Date_mesure) = 2021 
+GROUP BY g.Nom_gaz;
