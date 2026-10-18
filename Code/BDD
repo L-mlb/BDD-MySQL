@@ -1,0 +1,106 @@
+DROP DATABASE IF EXISTS livrable2projet5; 
+CREATE DATABASE IF NOT EXISTS livrable2projet5; 
+USE livrable2projet5; 
+CREATE TABLE Region ( 
+Id_Region INT PRIMARY KEY, 
+Nom_region VARCHAR(50) 
+); 
+CREATE TABLE Ville ( 
+Id_Ville INT PRIMARY KEY, 
+Nom_ville VARCHAR(50), 
+Id_Region INT, 
+FOREIGN KEY (Id_Region) REFERENCES Region(Id_Region) 
+); 
+CREATE TABLE Agence ( 
+Id_Agence INT PRIMARY KEY, 
+Adresse_postale VARCHAR(50), 
+Id_Ville INT, 
+FOREIGN KEY (Id_Ville) REFERENCES Ville(Id_Ville) 
+); 
+CREATE TABLE Agent ( 
+Id_Agent INT PRIMARY KEY, 
+Nom_agent VARCHAR(50), 
+Prenom_agent VARCHAR(50), 
+Date_naissance DATE, 
+Date_entree DATE, 
+Date_sortie DATE, 
+Adresse_postale_agent VARCHAR(50), 
+Id_Agence INT, 
+FOREIGN KEY (Id_Agence) REFERENCES Agence(Id_Agence) 
+); 
+CREATE TABLE Chef_agence ( 
+ID_Chef INT PRIMARY KEY, 
+Diplome_chef VARCHAR(50), 
+Id_Agent INT UNIQUE, 
+FOREIGN KEY (Id_Agent) REFERENCES Agent(Id_Agent) 
+); 
+CREATE TABLE assistant_technique ( 
+ID_AT_ INT PRIMARY KEY, 
+Id_Agent INT UNIQUE, 
+FOREIGN KEY (Id_Agent) REFERENCES Agent(Id_Agent) 
+); 
+CREATE TABLE assistant_adminstratif ( 
+ID_AD_ INT PRIMARY KEY, 
+Id_Agent INT UNIQUE, 
+FOREIGN KEY (Id_Agent) REFERENCES Agent(Id_Agent) 
+); 
+CREATE TABLE Nature_Gaz ( 
+Id_Nature_Gaz INT PRIMARY KEY, 
+Nature VARCHAR(50) 
+); 
+CREATE TABLE Gaz ( 
+Id_Gaz INT PRIMARY KEY, 
+Nom VARCHAR(50), 
+Formule VARCHAR(50), 
+Id_Nature_Gaz INT, 
+FOREIGN KEY (Id_Nature_Gaz) REFERENCES Nature_Gaz(Id_Nature_Gaz) 
+); 
+CREATE TABLE Capteur ( 
+Id_Capteur INT PRIMARY KEY, 
+Etat_capteur VARCHAR(50), 
+Id_Agence INT, 
+Id_Ville INT, 
+ID_AT_ INT, 
+FOREIGN KEY (Id_Agence) REFERENCES Agence(Id_Agence), 
+FOREIGN KEY (Id_Ville) REFERENCES Ville(Id_Ville), 
+FOREIGN KEY (ID_AT_) REFERENCES assistant_technique(ID_AT_) 
+); 
+CREATE TABLE Rapport ( 
+Id_Rapport INT PRIMARY KEY, 
+Titre VARCHAR(50), 
+Date_rapport DATE, 
+Releve VARCHAR(50), 
+Analyse VARCHAR(50), 
+ID_AD_ INT, 
+FOREIGN KEY (ID_AD_) REFERENCES assistant_adminstratif(ID_AD_) 
+); 
+CREATE TABLE Mesures ( 
+Id_Mesures INT PRIMARY KEY, 
+Valeur_mesure DECIMAL(15,2), 
+Date_mesure DATE, 
+Id_Rapport INT, 
+Id_Capteur INT, 
+FOREIGN KEY (Id_Capteur) REFERENCES Capteur(Id_Capteur), 
+FOREIGN KEY (Id_Rapport) REFERENCES Rapport(Id_Rapport) 
+); 
+CREATE TABLE Mesurer ( 
+Id_Capteur INT, 
+Id_Gaz INT, 
+PRIMARY KEY (Id_Capteur, Id_Gaz), 
+FOREIGN KEY (Id_Capteur) REFERENCES Capteur(Id_Capteur), 
+FOREIGN KEY (Id_Gaz) REFERENCES Gaz(Id_Gaz) 
+); 
+CREATE TABLE Analyser ( 
+Id_Mesures INT, 
+ID_AD_ INT, 
+PRIMARY KEY (Id_Mesures, ID_AD_), 
+FOREIGN KEY (Id_Mesures) REFERENCES Mesures(Id_Mesures), 
+FOREIGN KEY (ID_AD_) REFERENCES assistant_adminstratif(ID_AD_) 
+); 
+CREATE TABLE Rediger ( 
+Id_Rapport INT, 
+ID_AD_ INT, 
+PRIMARY KEY (Id_Rapport, ID_AD_), 
+FOREIGN KEY (Id_Rapport) REFERENCES Rapport(Id_Rapport), 
+FOREIGN KEY (ID_AD_) REFERENCES assistant_adminstratif(ID_AD_) 
+);
