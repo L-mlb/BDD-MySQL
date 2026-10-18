@@ -1,106 +1,196 @@
 DROP DATABASE IF EXISTS livrable2projet5; 
 CREATE DATABASE IF NOT EXISTS livrable2projet5; 
 USE livrable2projet5; 
-CREATE TABLE Region ( 
-Id_Region INT PRIMARY KEY, 
-Nom_region VARCHAR(50) 
+
+/*Nettoyage*/ 
+DROP USER IF EXISTS 'cheftest'@'localhost'; 
+DROP USER IF EXISTS 'admintest'@'localhost'; 
+DROP USER IF EXISTS 'technicientest'@'localhost'; 
+DROP USER IF EXISTS 'admin_global'@'localhost'; 
+
+/*Appliquer les privilèges immédiatement*/ 
+FLUSH PRIVILEGES; 
+
+/*Tables parentes*/ 
+CREATE TABLE `region` ( 
+`Id_Region` int AUTO_INCREMENT, 
+`Nom_region` varchar(50) DEFAULT NULL, 
+PRIMARY KEY (`Id_Region`) 
 ); 
-CREATE TABLE Ville ( 
-Id_Ville INT PRIMARY KEY, 
-Nom_ville VARCHAR(50), 
-Id_Region INT, 
-FOREIGN KEY (Id_Region) REFERENCES Region(Id_Region) 
+
+CREATE TABLE `nature_gaz` ( 
+`Id_Nature_Gaz` int AUTO_INCREMENT, 
+`Nature_gaz` varchar(50) DEFAULT NULL, 
+PRIMARY KEY (`Id_Nature_Gaz`) 
+) ; 
+
+/*Tables de niveau 2 (Dépendent du niveau 1)*/ 
+21 
+CREATE TABLE `ville` ( 
+`Id_Ville` int AUTO_INCREMENT, 
+`Nom_ville` varchar(50) DEFAULT NULL, 
+`Id_Region` int DEFAULT NULL, 
+PRIMARY KEY (`Id_Ville`), 
+KEY `Id_Region` (`Id_Region`), 
+CONSTRAINT `ville_ibfk_1` FOREIGN KEY (`Id_Region`) REFERENCES `region` (`Id_Region`) 
+) ; 
+
+CREATE TABLE `gaz` ( 
+`Id_Gaz` int AUTO_INCREMENT, 
+`Nom_gaz` varchar(50) DEFAULT NULL, 
+`Formule_gaz` varchar(50) DEFAULT NULL, 
+`Id_Nature_Gaz` int DEFAULT NULL, 
+PRIMARY KEY (`Id_Gaz`), 
+KEY `Id_Nature_Gaz` (`Id_Nature_Gaz`), 
+CONSTRAINT `gaz_ibfk_1` FOREIGN KEY (`Id_Nature_Gaz`) REFERENCES `nature_gaz` (`Id_Nature_Gaz`) 
+) ; 
+
+/*tables de niveau 3 (Infrastructures et Agents de base)*/ 
+CREATE TABLE `agence` ( 
+`Id_Agence` int AUTO_INCREMENT, 
+`Adresse_postale` varchar(100) DEFAULT NULL, 
+`Id_Ville` int DEFAULT NULL, 
+PRIMARY KEY (`Id_Agence`), 
+KEY `Id_Ville` (`Id_Ville`), 
+CONSTRAINT `agence_ibfk_1` FOREIGN KEY (`Id_Ville`) REFERENCES `ville` (`Id_Ville`) 
 ); 
-CREATE TABLE Agence ( 
-Id_Agence INT PRIMARY KEY, 
-Adresse_postale VARCHAR(50), 
-Id_Ville INT, 
-FOREIGN KEY (Id_Ville) REFERENCES Ville(Id_Ville) 
-); 
-CREATE TABLE Agent ( 
-Id_Agent INT PRIMARY KEY, 
-Nom_agent VARCHAR(50), 
-Prenom_agent VARCHAR(50), 
-Date_naissance DATE, 
-Date_entree DATE, 
-Date_sortie DATE, 
-Adresse_postale_agent VARCHAR(50), 
-Id_Agence INT, 
-FOREIGN KEY (Id_Agence) REFERENCES Agence(Id_Agence) 
-); 
-CREATE TABLE Chef_agence ( 
-ID_Chef INT PRIMARY KEY, 
-Diplome_chef VARCHAR(50), 
-Id_Agent INT UNIQUE, 
-FOREIGN KEY (Id_Agent) REFERENCES Agent(Id_Agent) 
-); 
-CREATE TABLE assistant_technique ( 
-ID_AT_ INT PRIMARY KEY, 
-Id_Agent INT UNIQUE, 
-FOREIGN KEY (Id_Agent) REFERENCES Agent(Id_Agent) 
-); 
-CREATE TABLE assistant_adminstratif ( 
-ID_AD_ INT PRIMARY KEY, 
-Id_Agent INT UNIQUE, 
-FOREIGN KEY (Id_Agent) REFERENCES Agent(Id_Agent) 
-); 
-CREATE TABLE Nature_Gaz ( 
-Id_Nature_Gaz INT PRIMARY KEY, 
-Nature VARCHAR(50) 
-); 
-CREATE TABLE Gaz ( 
-Id_Gaz INT PRIMARY KEY, 
-Nom VARCHAR(50), 
-Formule VARCHAR(50), 
-Id_Nature_Gaz INT, 
-FOREIGN KEY (Id_Nature_Gaz) REFERENCES Nature_Gaz(Id_Nature_Gaz) 
-); 
-CREATE TABLE Capteur ( 
-Id_Capteur INT PRIMARY KEY, 
-Etat_capteur VARCHAR(50), 
-Id_Agence INT, 
-Id_Ville INT, 
-ID_AT_ INT, 
-FOREIGN KEY (Id_Agence) REFERENCES Agence(Id_Agence), 
-FOREIGN KEY (Id_Ville) REFERENCES Ville(Id_Ville), 
-FOREIGN KEY (ID_AT_) REFERENCES assistant_technique(ID_AT_) 
-); 
-CREATE TABLE Rapport ( 
-Id_Rapport INT PRIMARY KEY, 
-Titre VARCHAR(50), 
-Date_rapport DATE, 
-Releve VARCHAR(50), 
-Analyse VARCHAR(50), 
-ID_AD_ INT, 
-FOREIGN KEY (ID_AD_) REFERENCES assistant_adminstratif(ID_AD_) 
-); 
-CREATE TABLE Mesures ( 
-Id_Mesures INT PRIMARY KEY, 
-Valeur_mesure DECIMAL(15,2), 
-Date_mesure DATE, 
-Id_Rapport INT, 
-Id_Capteur INT, 
-FOREIGN KEY (Id_Capteur) REFERENCES Capteur(Id_Capteur), 
-FOREIGN KEY (Id_Rapport) REFERENCES Rapport(Id_Rapport) 
-); 
-CREATE TABLE Mesurer ( 
-Id_Capteur INT, 
-Id_Gaz INT, 
-PRIMARY KEY (Id_Capteur, Id_Gaz), 
-FOREIGN KEY (Id_Capteur) REFERENCES Capteur(Id_Capteur), 
-FOREIGN KEY (Id_Gaz) REFERENCES Gaz(Id_Gaz) 
-); 
-CREATE TABLE Analyser ( 
-Id_Mesures INT, 
-ID_AD_ INT, 
-PRIMARY KEY (Id_Mesures, ID_AD_), 
-FOREIGN KEY (Id_Mesures) REFERENCES Mesures(Id_Mesures), 
-FOREIGN KEY (ID_AD_) REFERENCES assistant_adminstratif(ID_AD_) 
-); 
-CREATE TABLE Rediger ( 
-Id_Rapport INT, 
-ID_AD_ INT, 
-PRIMARY KEY (Id_Rapport, ID_AD_), 
-FOREIGN KEY (Id_Rapport) REFERENCES Rapport(Id_Rapport), 
-FOREIGN KEY (ID_AD_) REFERENCES assistant_adminstratif(ID_AD_) 
+
+CREATE TABLE `agent` ( 
+`Id_Agent` int AUTO_INCREMENT, 
+`Nom_agent` varchar(50) DEFAULT NULL, 
+`Prenom_agent` varchar(50) DEFAULT NULL, 
+`Date_naissance` date DEFAULT NULL, 
+`Date_entree` date DEFAULT NULL, 
+`Date_sortie` date DEFAULT NULL, 
+`Adresse_postale_agent` varchar(100) DEFAULT NULL, 
+`Id_Agence` int DEFAULT NULL, 
+PRIMARY KEY (`Id_Agent`), 
+KEY `Id_Agence` (`Id_Agence`), 
+CONSTRAINT `agent_ibfk_1` FOREIGN KEY (`Id_Agence`) REFERENCES `agence` (`Id_Agence`) 
 );
+
+/*tables de niveau 4 (Spécialisations RH)*/ 
+CREATE TABLE `assistant_administratif` ( 
+`ID_AD` int AUTO_INCREMENT, 
+`Id_Agent` int DEFAULT NULL, 
+PRIMARY KEY (`ID_AD`), 
+UNIQUE KEY `Id_Agent` (`Id_Agent`), 
+CONSTRAINT `assistant_administratif_ibfk_1` FOREIGN KEY (`Id_Agent`) REFERENCES `agent` (`Id_Agent`) 
+);
+
+CREATE TABLE `assistant_technique` ( 
+`ID_AT` int AUTO_INCREMENT, 
+`Id_Agent` int DEFAULT NULL, 
+PRIMARY KEY (`ID_AT`), 
+UNIQUE KEY `Id_Agent` (`Id_Agent`), 
+CONSTRAINT `assistant_technique_ibfk_1` FOREIGN KEY (`Id_Agent`) REFERENCES `agent` (`Id_Agent`) 
+);
+
+CREATE TABLE `chef_agence` ( 
+`ID_Chef` int AUTO_INCREMENT, 
+`Diplome_chef` varchar(50) DEFAULT NULL, 
+`Id_Agent` int DEFAULT NULL, 
+PRIMARY KEY (`ID_Chef`), 
+UNIQUE KEY `Id_Agent` (`Id_Agent`), 
+CONSTRAINT `chef_agence_ibfk_1` FOREIGN KEY (`Id_Agent`) REFERENCES `agent` (`Id_Agent`) 
+);
+
+/*tables de niveau 5 (Matériel et Rapports)*/ 
+CREATE TABLE `capteur` ( 
+`Id_Capteur` int AUTO_INCREMENT, 
+`Etat_capteur` varchar(50) DEFAULT NULL, 
+`Id_Agence` int DEFAULT NULL, 
+`Id_Ville` int DEFAULT NULL, 
+`ID_AT` int DEFAULT NULL, 
+PRIMARY KEY (`Id_Capteur`), 
+KEY `Id_Agence` (`Id_Agence`), 
+KEY `Id_Ville` (`Id_Ville`), 
+KEY `capteur_ibfk_3` (`ID_AT`), 
+CONSTRAINT `capteur_ibfk_1` FOREIGN KEY (`Id_Agence`) REFERENCES `agence` (`Id_Agence`), 
+CONSTRAINT `capteur_ibfk_2` FOREIGN KEY (`Id_Ville`) REFERENCES `ville` (`Id_Ville`), 
+CONSTRAINT `capteur_ibfk_3` FOREIGN KEY (`ID_AT`) REFERENCES `assistant_technique` (`ID_AT`) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
+
+CREATE TABLE `rapport` ( 
+`Id_Rapport` int AUTO_INCREMENT, 
+`Titre_rapport` varchar(150) DEFAULT NULL, 
+`Date_rapport` date DEFAULT NULL, 
+`Releve_rapport` TEXT DEFAULT NULL, 
+`Analyse_rapport` TEXT DEFAULT NULL, 
+PRIMARY KEY (`Id_Rapport`) 
+);
+
+/*tables de niveau 6 (Mesures et Associations)*/ 
+CREATE TABLE `mesurer` ( 
+`Id_Capteur` int NOT NULL, 
+`Id_Gaz` int NOT NULL, 
+PRIMARY KEY (`Id_Capteur`,`Id_Gaz`), 
+KEY `Id_Gaz` (`Id_Gaz`), 
+CONSTRAINT `mesurer_ibfk_1` FOREIGN KEY (`Id_Capteur`) REFERENCES `capteur` (`Id_Capteur`), 
+CONSTRAINT `mesurer_ibfk_2` FOREIGN KEY (`Id_Gaz`) REFERENCES `gaz` (`Id_Gaz`) 
+);
+
+CREATE TABLE `rediger` ( 
+`Id_Rapport` int NOT NULL, 
+`ID_AD` int NOT NULL, 
+PRIMARY KEY (`Id_Rapport`,`ID_AD`), 
+KEY `rediger_ibfk_2` (`ID_AD`), 
+CONSTRAINT `rediger_ibfk_1` FOREIGN KEY (`Id_Rapport`) REFERENCES `rapport` (`Id_Rapport`), 
+CONSTRAINT `rediger_ibfk_2` FOREIGN KEY (`ID_AD`) REFERENCES `assistant_administratif` (`ID_AD`) 
+);
+ 
+CREATE TABLE `mesures` ( 
+`Id_Mesures` int AUTO_INCREMENT, 
+`Valeur_mesure` decimal(15,2) DEFAULT NULL, 
+`Date_mesure` date DEFAULT NULL, 
+`Id_Rapport` int DEFAULT NULL, 
+`Id_Capteur` int DEFAULT NULL, 
+PRIMARY KEY (`Id_Mesures`), 
+KEY `Id_Capteur` (`Id_Capteur`), 
+KEY `Id_Rapport` (`Id_Rapport`), 
+CONSTRAINT `mesures_ibfk_1` FOREIGN KEY (`Id_Capteur`) REFERENCES `capteur` (`Id_Capteur`), 
+CONSTRAINT `mesures_ibfk_2` FOREIGN KEY (`Id_Rapport`) REFERENCES `rapport` (`Id_Rapport`) 
+);
+
+/*tables de niveau 7 (Association finale)*/ 
+CREATE TABLE `analyser` ( 
+`Id_Mesures` int NOT NULL, 
+`ID_AD` int NOT NULL, 
+PRIMARY KEY (`Id_Mesures`,`ID_AD`), 
+KEY `analyser_ibfk_2` (`ID_AD`), 
+CONSTRAINT `analyser_ibfk_1` FOREIGN KEY (`Id_Mesures`) REFERENCES `mesures` (`Id_Mesures`), 
+CONSTRAINT `analyser_ibfk_2` FOREIGN KEY (`ID_AD`) REFERENCES `assistant_administratif` (`ID_AD`) 
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci; 
+
+/*compte admin global (Pour respecter la consigne du projet)
+Rôle : Gère tout, notamment les RH (ajout d'agents, création d'agences)*/ 
+CREATE USER 'admin_global'@'localhost' IDENTIFIED BY 'MotDePasseAdmin123!'; 
+GRANT ALL PRIVILEGES ON livrable2projet5.* TO 'admin_global'@'localhost'; 
+
+/*compte chef d'agence (Lecture seule pour les résumés) 
+Rôle : Consulter la base pour générer les 12 requêtes de résumé*/ 
+CREATE USER 'cheftest'@'localhost' IDENTIFIED BY 'MotDePasseChef123!'; 
+
+/*Il peut tout lire, mais ne peut rien modifier, insérer ou supprimer*/ 
+GRANT SELECT ON livrable2projet5.* TO 'cheftest'@'localhost'; 
+
+/*compte agent administratif (Gestion des rapports) 
+Rôle : Créer des rapports. Interdiction de les modifier/supprimer*/ 
+CREATE USER 'admintest'@'localhost' IDENTIFIED BY 'MotDePasseAdminAgent123!'; 
+/*Peut lire toutes les données pour faire ses analyses*/ 
+GRANT SELECT ON livrable2projet5.* TO 'admintest'@'localhost'; 
+/*Peut CRÉER des rapports (et les lier), mais pas les modifier ni les supprimer*/ 
+GRANT INSERT ON livrable2projet5.rapport TO 'admintest'@'localhost'; 
+GRANT INSERT ON livrable2projet5.rediger TO 'admintest'@'localhost'; 
+GRANT INSERT ON livrable2projet5.analyser TO 'admintest'@'localhost'; 
+
+/*compte agent technique (Gestion des capteurs et mesures) 
+Rôle : Ajout/Suppression de mesures (Pas de modification)*/ 
+CREATE USER 'technicientest'@'localhost' IDENTIFIED BY 'MotDePasseTech123!'; 
+/*Peut lire les données nécessaires*/ 
+GRANT SELECT ON livrable2projet5.* TO 'technicientest'@'localhost'; 
+/*Peut gérer les capteurs (ajout, modification de statut, suppression)*/ 
+GRANT INSERT, UPDATE, DELETE ON livrable2projet5.capteur TO 'technicientest'@'localhost'; 
+/*Peut ajouter et supprimer des mesures, MAIS interdiction de les modifier (Pas de UPDATE)*/ 
+GRANT INSERT, DELETE ON livrable2projet5.mesures TO 'technicientest'@'localhost'; 
+GRANT INSERT, DELETE ON livrable2projet5.mesurer TO 'technicientest'@'localhost';
