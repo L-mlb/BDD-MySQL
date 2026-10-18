@@ -1,0 +1,10 @@
+/*Liste des régions dans lesquelles il y a plus de capteurs que de personnel d’agence*/ 
+SELECT g.Nom_gaz, ROUND(AVG(m.Valeur_mesure), 2) AS Moyenne_ppm 
+FROM mesures m 
+JOIN capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN ville v ON c.Id_Ville = v.Id_Ville 
+JOIN region r ON v.Id_Region = r.Id_Region 
+JOIN mesurer mes ON c.Id_Capteur = mes.Id_Capteur 
+JOIN gaz g ON mes.Id_Gaz = g.Id_Gaz 
+WHERE r.Nom_region = 'Île-de-France' AND YEAR(m.Date_mesure) = 2021 
+GROUP BY g.Nom_gaz;
