@@ -1,0 +1,4 @@
+/* Nombre total de capteurs déployés*/
+SELECT c.Id_Capteur  
+FROM Capteur c ; 
+
