@@ -1,0 +1,10 @@
+/*Mois où la concentration de HFC a été la moins importante pour chaque région*/
+SELECT e.nom_region, MONTH(m.Date_mesure) AS Mois, MIN(m.Valeur_mesure) AS Valeur_min 
+FROM Mesures m  
+JOIN Capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN Mesurer k ON c.Id_Capteur = k.Id_Capteur 
+JOIN Gaz g ON k.Id_Gaz = g.Id_Gaz 
+JOIN Ville v ON c.Id_ville = v.Id_ville 
+JOIN region e ON v.Id_region = e.Id_region 
+WHERE g.Formule_gaz = 'HFC'  
+GROUP BY MONTH(m.Date_mesure), (e.Nom_region); 
