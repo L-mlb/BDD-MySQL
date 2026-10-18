@@ -1,0 +1,15 @@
+/*Taux de productivité des agents administratifs de l'agence de Toulouse (le taux est 
+calculé en nombre de rapports écrits par mois en moyenne, sur la durée de leur contrat)*/ 
+SELECT ag.Nom_agent, ag.Prenom_agent,COUNT(r.Id_Rapport) AS 
+Total_Rapports_Ecrits,GREATEST(TIMESTAMPDIFF(MONTH, ag.Date_entree, COALESCE(ag.Date_sortie, 
+CURDATE())), 1) AS Mois_Travailles, 
+ROUND(COUNT(r.Id_Rapport) / GREATEST(TIMESTAMPDIFF(MONTH, ag.Date_entree, 
+COALESCE(ag.Date_sortie, CURDATE())), 1), 2) AS Taux_Productivite_Mensuel 
+FROM agent ag 
+JOIN agence a ON ag.Id_Agence = a.Id_Agence 
+JOIN ville v ON a.Id_Ville = v.Id_Ville 
+JOIN assistant_administratif ad ON ag.Id_Agent = ad.Id_Agent 
+LEFT JOIN rediger r ON ad.ID_AD = r.ID_AD 
+WHERE v.Nom_ville = 'Toulouse'
+GROUP BY ag.Id_Agent, ag.Nom_agent, ag.Prenom_agent, ag.Date_entree, ag.Date_sortie;
+
