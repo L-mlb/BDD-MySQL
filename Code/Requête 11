@@ -1,0 +1,10 @@
+/*Liste des rapports contenant des données qui le concernent (on doit pouvoir donner 
+le nom du gaz en paramètre) pour un Gaz donné*/
+SET @Parametre_Gaz = 'Méthane';  
+SELECT DISTINCT r.Id_Rapport, r.Titre_rapport, r.Date_rapport 
+FROM rapport r 
+JOIN mesures m ON r.Id_Rapport = m.Id_Rapport 
+JOIN capteur c ON m.Id_Capteur = c.Id_Capteur 
+JOIN mesurer mes ON c.Id_Capteur = mes.Id_Capteur 
+JOIN gaz g ON mes.Id_Gaz = g.Id_Gaz 
+WHERE g.Nom_gaz = @Parametre_Gaz; 
