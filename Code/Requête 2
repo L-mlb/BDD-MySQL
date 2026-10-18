@@ -1,0 +1,10 @@
+/*Liste de l'ensemble du personnel technique de l'agence de Bordeaux*/ 
+SELECT DISTINCT p.Nom_agent, p.Prenom_agent 
+FROM Agent  p 
+JOIN Agence a ON p.Id_Agence = a.Id_Agence  
+JOIN Ville v ON a.Id_Ville = v.Id_Ville  
+JOIN Capteur c ON v.Id_Ville = c.Id_Ville  
+JOIN assistant_technique t ON c.ID_AT= t.ID_AT 
+WHERE v.Nom_ville = 'Bordeaux' ; 
+
+
