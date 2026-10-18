@@ -1,0 +1,7 @@
+/*Titres et dates des rapports concernant des concentrations de NH3*/
+SELECT r.Titre_rapport, r.Date_rapport 
+FROM Rapport r 
+JOIN Mesures m ON r.Id_Rapport = m.Id_Rapport 
+JOIN Mesurer k ON m.Id_Capteur = k.Id_Capteur 
+JOIN Gaz g ON k.Id_Gaz = g.Id_Gaz 
+WHERE g.Formule_gaz = 'NH3'; 
