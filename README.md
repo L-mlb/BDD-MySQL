@@ -32,21 +32,6 @@ L’objectif : créer une **base de données relationnelle fiable**, centralisé
 
 ---
 
-## 🧬 Structure de la base
-Tables principales :  
-
-- `Regions`, `Villes`, `Agences`  
-- `Personnel`, `Agent_administratif`, `Agent_technique`  
-- `Capteurs`, `Gaz`, `Releves`  
-- `Rapports`, `Dependre`, `Rediger`  
-
-🔒 Contraintes importantes :  
-- Clés primaires auto-incrémentées  
-- Clés étrangères avec `ON DELETE CASCADE` là où pertinent  
-- Contraintes `CHECK` sur dates et valeurs critiques  
-
----
-
 ## 💾  Peuplement
 - 13 régions, 2 villes par région  
 - 14 agences, 41 employés minimum  
@@ -68,13 +53,6 @@ Tables principales :
 10. Taux de productivité des agents administratifs à Toulouse  
 11. Rapports liés à un gaz donné (paramétrable)  
 12. Régions avec plus de capteurs que de personnel  
-
----
-
-## 🛠️ Technologies & Outils
-- **SGBD :** MySQL / SQLite  
-- **SQL :** création, peuplement, requêtes analytiques
-- **Microsoft Excel :** tableaux de visualisation des données (Matrice des Dépendances Fonctionnelles)
 
 ---
 
