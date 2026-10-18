@@ -1,0 +1,11 @@
+/*Liste des noms des agents techniques maintenant des capteurs concernant les gaz à 
+effet de serre provenant de l’industrie (GESI)*/
+SELECT p.Prenom_agent, p.Nom_agent 
+FROM Agent p 
+JOIN Agence a ON p.Id_Agence = a.Id_Agence 
+JOIN Ville v ON a.Id_Ville = v.Id_Ville 
+JOIN Capteur c ON v.Id_Ville = c.Id_Ville 
+JOIN Mesurer k ON c.Id_Capteur = k.Id_Capteur 
+JOIN Gaz g ON k.Id_Gaz = g.Id_Gaz 
+JOIN Nature_Gaz n ON g.Id_Nature_Gaz = n.Id_Nature_Gaz  
+WHERE n.Nature_gaz = 'GESI'; 
