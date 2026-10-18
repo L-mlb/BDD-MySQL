@@ -1,0 +1,224 @@
+/*nettoyage total*/ 
+SET SQL_SAFE_UPDATES = 0; 
+DELETE FROM analyser; 
+DELETE FROM rediger; 
+DELETE FROM mesures; 
+DELETE FROM mesurer; 
+DELETE FROM capteur; 
+DELETE FROM rapport; 
+DELETE FROM assistant_administratif; 
+DELETE FROM assistant_technique; 
+DELETE FROM chef_agence; 
+DELETE FROM agent; 
+DELETE FROM agence; 
+DELETE FROM ville; 
+DELETE FROM region; 
+DELETE FROM gaz; 
+DELETE FROM nature_gaz; 
+SET SQL_SAFE_UPDATES = 1; 
+
+/*DONNÉES DE RÉFÉRENCE (Gaz, Régions, Villes)*/
+INSERT INTO nature_gaz (id_nature_gaz, nature_gaz) VALUES 
+(1, 'GES'), (2, 'GESI'); 
+INSERT INTO gaz (id_gaz, nom_gaz, formule_gaz, id_nature_gaz) VALUES 
+(1, 'Protoxyde d''azote', 'N2O', 1), 
+(2, 'Ozone troposphérique', 'O3', 1), 
+(3, 'Méthane', 'CH4', 1), 
+(4, 'Hydrofluorocarbures', 'HFC', 2), 
+(5, 'Hexafluorure de soufre', 'SF6', 2), 
+(6, 'Dioxyde de carbone', 'CO2', 1), 
+(7, 'Ammoniac', 'NH3', 2); /*Ajout du gaz spécifique pour la Requête 7*/ 
+
+/*Les 13 Régions*/
+INSERT INTO region (id_region, nom_region) VALUES 
+(1, 'Nouvelle-Aquitaine'), (2, 'Occitanie'), (3, 'Île-de-France'), (4, 'Bretagne'), 
+(5, 'Auvergne-Rhône-Alpes'), (6, 'Bourgogne-Franche-Comté'), (7, 'Centre-Val de Loire'), 
+(8, 'Corse'), (9, 'Grand Est'), (10, 'Hauts-de-France'), (11, 'Normandie'), 
+(12, 'Pays de la Loire'), (13, 'Provence-Alpes-Côte d''Azur'); 
+
+/*Les 19 Villes*/ 
+INSERT INTO ville (id_ville, nom_ville, id_region) VALUES 
+(1, 'Bordeaux', 1), (2, 'Périgueux', 1), (3, 'Limoges', 1), 
+(4, 'Toulouse', 2), (5, 'Montpellier', 2), (6, 'Paris', 3), (7, 'Versailles', 3), 
+(8, 'Rennes', 4), (9, 'Quimper', 4), (10, 'Lyon', 5), (11, 'Dijon', 6),  
+(12, 'Orléans', 7), (13, 'Ajaccio', 8), (14, 'Strasbourg', 9), (15, 'Lille', 10),  
+(16, 'Rouen', 11), (17, 'Nantes', 12), (18, 'Marseille', 13), (19, 'Reims', 9);  
+
+/*AGENCES ET PERSONNEL 
+Toutes les agences*/ 
+INSERT INTO agence (id_agence, adresse_postale, id_ville) VALUES 
+(1, '10 Cours de l''Intendance, Bordeaux', 1), 
+(2, '15 Place du Capitole, Toulouse', 4), 
+(3, '20 Rue de Rivoli, Paris', 6), 
+(4, '5 Place de la Mairie, Rennes', 8), 
+(5, '8 Boulevard Victor Hugo, Limoges', 3), 
+(6, '1 Rue de la République, Lyon', 10), 
+(7, '2 Place de la Libération, Dijon', 11), 
+(8, '3 Place du Martroi, Orléans', 12), 
+(9, '4 Cours Napoléon, Ajaccio', 13), 
+(10, '5 Place Kléber, Strasbourg', 14), 
+(11, '6 Grand Place, Lille', 15), 
+(12, '7 Rue du Gros Horloge, Rouen', 16), 
+(13, '8 Place Royale, Nantes', 17), 
+(14, '9 Vieux-Port, Marseille', 18); 
+
+/*Tous les agents (1 à 22)*/ 
+INSERT INTO agent (id_agent, nom_agent, prenom_agent, date_naissance, date_entree, 
+adresse_postale_agent, id_agence) VALUES
+(1, 'Martin', 'Paul', '1980-05-14', '2015-09-01', '12 Rue des Lilas, Bordeaux', 1), 
+(2, 'Garcia', 'Lucie', '1982-11-22', '2016-01-15', '34 Avenue Jean Jaurès, Toulouse', 2), 
+(3, 'Bernard', 'Marc', '1975-03-30', '2010-05-01', '50 Rue Monge, Paris', 3), 
+(4, 'MARTIN', 'Rémi', '1992-04-18', '2019-06-10', '15 Rue des Arts, Toulouse', 2), 
+(5, 'Moreau', 'Lucas', '1995-02-28', '2020-01-20', '8 Rue Pargaminières, Toulouse', 2), 
+(6, 'Simon', 'Emma', '1990-11-02', '2018-03-01', '22 Rue Sainte-Catherine, Bordeaux', 1), 
+(7, 'Petit', 'Jean', '1991-06-25', '2019-04-01', '5 Rue Jean Jaurès, Limoges', 5), 
+(8, 'Leroy', 'Kevin', '1985-01-17', '2015-03-10', '3 Rue de la Boétie, Périgueux', 1), 
+(9, 'Durand', 'Marie', '1994-05-03', '2020-07-01', '18 Rue Fondaudège, Bordeaux', 1), 
+(10, 'Garnier', 'Antoine', '1988-11-08', '2017-04-01', '2 Place de la Motte, Limoges', 5), 
+(11, 'Fournier', 'Elodie', '1997-02-14', '2021-10-15', '11 Rue des Filatiers, Toulouse', 2), 
+(12, 'Girard', 'Nicolas', '1991-08-30', '2019-01-05', '7 Boulevard de Montpellier', 2), 
+(13, 'Boucher', 'Alice', '1986-07-14', '2018-05-01', '10 Rue de la Paix, Rennes', 4),  
+(14, 'Colin', 'Hugo', '1993-09-12', '2021-02-15', '5 Avenue de la République, Paris', 3), 
+(15, 'Vidot', 'Clara', '1990-12-05', '2019-11-20', '8 Rue du Commerce, Bordeaux', 1), 
+(16, 'Dumas', 'Paul', '1985-03-22', '2016-08-10', '15 Boulevard Carnot, Toulouse', 2), 
+(17, 'Lemoine', 'Julie', '1998-01-30', '2022-09-01', '22 Rue des Fleurs, Limoges', 5), 
+(18, 'Roussel', 'Marc', '1992-06-18', '2020-01-15', '14 Rue de la Mairie, Montpellier', 2), 
+(19, 'Marchand', 'Sophie', '1988-11-02', '2017-05-10', '9 Avenue Foch, Paris', 3), 
+(20, 'Gautier', 'Luc', '1995-04-25', '2021-07-01', '3 Place de l Église, Versailles', 3), 
+(21, 'Perrin', 'Emma', '1991-08-14', '2018-10-20', '11 Rue de la Gare, Quimper', 4), 
+(22, 'Clement', 'Tom', '1994-02-08', '2020-03-05', '7 Boulevard Saint-Michel, Rennes', 4); 
+
+/*Affectation des rôles*/ 
+INSERT INTO chef_agence (id_chef, diplome_chef, id_agent) VALUES 
+(1, 'Master Management', 1), (2, 'Master Commerce', 2), (3, 'Ingénieur', 3), (4, 'Master Sciences 
+Environnementales', 13); 
+INSERT INTO assistant_administratif (id_AD, id_agent) VALUES 
+(1, 4), (2, 5), (3, 6), (4, 7), (5, 14), (6, 15), (7, 16), (8, 17);
+INSERT INTO assistant_technique (id_AT, id_agent) VALUES 
+(1, 8), (2, 9), (3, 10), (4, 11), (5, 12), (6, 18), (7, 19), (8, 20), (9, 21), (10, 22); 
+
+/*CAPTEURS ET GAZ 
+Les 100 Capteurs*/ 
+INSERT INTO capteur (id_capteur, id_ville, id_AT, Etat_capteur) VALUES 
+/*Les 18 capteurs spécifiques (Base + Requêtes)*/ 
+(1, 2, 1, 'Actif'), (2, 2, 1, 'Actif'), (3, 2, 1, 'Actif'), (4, 2, 1, 'Actif'), (5, 2, 1, 'Actif'), (6, 2, 1, 'Actif'),  
+(7, 1, 2, 'Actif'), (8, 3, 3, 'Actif'), (9, 4, 4, 'Actif'), (10, 4, 4, 'Actif'), (11, 6, 7, 'Actif'), (12, 6, 7, 'Actif'),  
+(13, 8, 10, 'Actif'), (14, 5, 6, 'Actif'),  
+(15, 4, 4, 'Actif'), /*Capteur NH3 Toulouse*/ 
+(16, 6, 7, 'Actif'), (17, 4, 4, 'Actif'), /*Capteurs CH4 Paris et Toulouse*/ 
+(18, 8, 10, 'Actif'), /*Capteur HFC Rennes*/
+
+/*Ajout des 82 capteurs supplémentaires de remplissage*/ 
+(19, 15, 5, 'Actif'), (20, 16, 6, 'Actif'), (21, 17, 7, 'Actif'), (22, 18, 8, 'Actif'), (23, 19, 9, 'Actif'), (24, 1, 10, 'Actif'), 
+(25, 2, 1, 'Actif'), (26, 3, 2, 'Actif'), (27, 4, 3, 'Actif'), (28, 5, 4, 'En maintenance'), (29, 6, 5, 'Actif'), (30, 7, 6, 'Actif'), 
+(31, 8, 7, 'Actif'), (32, 9, 8, 'Actif'), (33, 10, 9, 'Actif'), (34, 11, 10, 'Actif'), (35, 12, 1, 'Actif'), (36, 13, 2, 'Actif'), 
+(37, 14, 3, 'Actif'), (38, 15, 4, 'Actif'), (39, 16, 5, 'Actif'), (40, 17, 6, 'Actif'), (41, 18, 7, 'Actif'), (42, 19, 8, 'En maintenance'), 
+(43, 1, 9, 'Actif'), (44, 2, 10, 'Actif'), (45, 3, 1, 'Actif'), (46, 4, 2, 'Actif'), (47, 5, 3, 'Actif'), (48, 6, 4, 'Actif'), 
+(49, 7, 5, 'Actif'), (50, 8, 6, 'Actif'), (51, 9, 7, 'Actif'), (52, 10, 8, 'Actif'), (53, 11, 9, 'Actif'), (54, 12, 10, 'Actif'), 
+(55, 13, 1, 'Actif'), (56, 14, 2, 'Actif'), (57, 15, 3, 'En maintenance'), (58, 16, 4, 'Actif'), (59, 17, 5, 'Actif'), (60, 18, 6, 'Actif'), 
+(61, 19, 7, 'Actif'), (62, 1, 8, 'Actif'), (63, 2, 9, 'Actif'), (64, 3, 10, 'Actif'), (65, 4, 1, 'Actif'), (66, 5, 2, 'Actif'), 
+(67, 6, 3, 'Actif'), (68, 7, 4, 'Actif'), (69, 8, 5, 'Actif'), (70, 9, 6, 'Actif'), (71, 10, 7, 'En maintenance'), (72, 11, 8, 'Actif'), 
+(73, 12, 9, 'Actif'), (74, 13, 10, 'Actif'), (75, 14, 1, 'Actif'), (76, 15, 2, 'Actif'), (77, 16, 3, 'Actif'), (78, 17, 4, 'Actif'), 
+(79, 18, 5, 'Actif'), (80, 19, 6, 'Actif'), (81, 1, 7, 'Actif'), (82, 2, 8, 'Actif'), (83, 3, 9, 'Actif'), (84, 4, 10, 'Actif'), 
+(85, 5, 1, 'En maintenance'), (86, 6, 2, 'Actif'), (87, 7, 3, 'Actif'), (88, 8, 4, 'Actif'), (89, 9, 5, 'Actif'), (90, 10, 6, 'Actif'), 
+(91, 11, 7, 'Actif'), (92, 12, 8, 'Actif'), (93, 13, 9, 'Actif'), (94, 14, 10, 'Actif'), (95, 15, 1, 'Actif'), (96, 16, 2, 'Actif'), 
+(97, 17, 3, 'Actif'), (98, 18, 4, 'En maintenance'), (99, 19, 5, 'Actif'), (100, 1, 6, 'Actif'); 
+
+/*Lier TOUS les capteurs à un gaz*/ 
+INSERT INTO mesurer (id_capteur, id_gaz) VALUES 
+/*Spécifiques*/ 
+(1, 1), (2, 2), (3, 3), (4, 4), (5, 5), (6, 6), (7, 4), (8, 5), (9, 6), (10, 2), (11, 6), (12, 2), (13, 3), (14, 1), 
+(15, 7), (16, 3), (17, 3), (18, 4), 
+/*Remplissage aléatoire (gaz de 1 à 6)*/ 
+(19, 1), (20, 2), (21, 3), (22, 4), (23, 5), (24, 6), (25, 1), (26, 2), (27, 3), (28, 4), (29, 5), (30, 6), 
+(31, 1), (32, 2), (33, 3), (34, 4), (35, 5), (36, 6), (37, 1), (38, 2), (39, 3), (40, 4), (41, 5), (42, 6), 
+(43, 1), (44, 2), (45, 3), (46, 4), (47, 5), (48, 6), (49, 1), (50, 2), (51, 3), (52, 4), (53, 5), (54, 6), 
+(55, 1), (56, 2), (57, 3), (58, 4), (59, 5), (60, 6), (61, 1), (62, 2), (63, 3), (64, 4), (65, 5), (66, 6), 
+(67, 1), (68, 2), (69, 3), (70, 4), (71, 5), (72, 6), (73, 1), (74, 2), (75, 3), (76, 4), (77, 5), (78, 6), 
+(79, 1), (80, 2), (81, 3), (82, 4), (83, 5), (84, 6), (85, 1), (86, 2), (87, 3), (88, 4), (89, 5), (90, 6), 
+(91, 1), (92, 2), (93, 3), (94, 4), (95, 5), (96, 6), (97, 1), (98, 2), (99, 3), (100, 4);
+
+/*RAPPORTS*/ 
+INSERT INTO rapport (id_rapport, Titre_rapport, Analyse_rapport, Date_rapport) VALUES 
+(1, 'La concentration d''ozone troposphérique en Occitanie en 2022', 'Relevés concernés : TOULOUSE-14-2021 à TOULOUSE-14-2212...', '2023-04-02'), 
+(2, 'Concentration CH4 - Périgueux', 'Relevé exhaustif du méthane.', '2024-05-10'), 
+(3, 'Audit préparatoire - Agence de Limoges', 'Tests des capteurs locaux.', '2024-01-20'), 
+(4, 'Bilan annuel CO2 Île-de-France 2021', 'Analyse détaillée des émissions post-confinement.', '2022-01-15'), 
+(5, 'Alerte pic d''Ozone été 2023', 'Dépassement des seuils d''alerte sur la région Nouvelle-Aquitaine.', '2023-08-10'), 
+(6, 'Rapport GESI (SF6 et HFC) en Bretagne', 'Concentrations stables observées.', '2023-11-05'), 
+(7, 'Évolution du méthane agricole - Occitanie', 'Corrélation entre CH4 et épandage.', '2021-09-20'), 
+(8, 'Synthèse qualité de l''air Paris Q1 2024', 'Amélioration globale constatée.', '2024-04-10'), 
+(9, 'Analyse comparative N2O 2020-2022', 'Baisse des émissions globales.', '2023-02-28'), 
+(10, 'Audit de fiabilité des capteurs Bordelais', 'Vérification de la calibration.', '2022-12-05'), 
+(11, 'Analyse Ammoniac 2023', 'Hausse du NH3 détectée.', '2023-06-01'), 
+(12, 'Suivi NH3 2022', 'Taux stables.', '2022-06-01');
+INSERT INTO rediger (id_rapport, id_AD) VALUES
+(1, 1), (2, 3), (3, 4), (4, 5), (5, 6), (6, 2), (7, 1), (8, 5), (9, 3), (10, 6), (11, 1), (12, 1); 
+
+/*MESURES (Spécifiques puis Génération massive) 
+Les mesures spécifiques (Excel + Requêtes)*/ 
+INSERT INTO mesures (id_mesures, date_mesure, valeur_mesure, id_capteur) VALUES 
+(1, '2024-03-01', 107.00, 1), (2, '2024-03-01', 196.80, 2), (3, '2024-03-01', 133.00, 3), 
+(4, '2024-03-01', 51.70, 4), (5, '2024-03-01', 433.00, 5), (6, '2024-03-01', 234.00, 6), 
+(7, '2024-04-01', 471.00, 1), (8, '2024-04-01', 334.60, 2), (9, '2024-04-01', 488.00, 3), 
+(10, '2024-04-01', 402.00, 4), (11, '2024-04-01', 182.50, 5), (12, '2024-04-01', 144.00, 6), 
+(13, '2024-05-01', 162.00, 1), (14, '2024-05-01', 7.64, 2), (15, '2024-05-01', 259.00, 3), 
+(16, '2024-05-01', 168.90, 4), (17, '2024-05-01', 395.00, 5), (18, '2024-05-01', 425.20, 6), 
+(19, '2023-06-01', 0.02, 7), (20, '2023-06-01', 0.01, 8), (21, '2023-06-01', 415.2, 9), 
+(22, '2023-06-01', 1.20, 10), 
+(501, '2020-05-01', 410.50, 11), (502, '2020-06-01', 42.30, 12), (503, '2020-07-01', 412.10, 11), 
+(504, '2023-05-01', 12.50, 15), (505, '2022-05-01', 14.20, 15), 
+(506, '2023-05-01', 1.85, 16), (507, '2023-06-01', 1.90, 16), 
+(508, '2023-05-01', 1.75, 17), (509, '2023-06-01', 1.80, 17), 
+(510, '2023-01-01', 0.04, 18), (511, '2023-02-01', 0.02, 18); 
+/*Insertion groupée de +700 mesures génériques (ID commençant à 1000 pour éviter les doublons)*/ 
+INSERT INTO mesures (id_mesures, date_mesure, valeur_mesure, id_capteur) 
+SELECT  
+@rownum := @rownum + 1 AS id_mesures, 
+dates.date_mesure, 
+CASE  
+WHEN c.id_gaz = 6 THEN ROUND(RAND() * (425 - 400) + 400, 2)  
+WHEN c.id_gaz = 2 THEN ROUND(RAND() * (80 - 20) + 20, 2)     
+WHEN c.id_gaz = 3 THEN ROUND(RAND() * (2.2 - 1.7) + 1.7, 2)  
+WHEN c.id_gaz = 1 THEN ROUND(RAND() * (340 - 320) + 320, 2)  
+WHEN c.id_gaz = 4 THEN ROUND(RAND() * (0.1 - 0.01) + 0.01, 2)  
+WHEN c.id_gaz = 5 THEN ROUND(RAND() * (0.02 - 0.005) + 0.005, 2) 
+WHEN c.id_gaz = 7 THEN ROUND(RAND() * (15 - 5) + 5, 2)  
+END AS valeur_mesure,
+c.id_capteur 
+FROM  
+( 
+SELECT '2018-01-01' AS date_mesure UNION SELECT '2018-02-01' UNION SELECT '2018-03-01' UNION 
+SELECT '2018-04-01' UNION SELECT '2018-05-01' UNION SELECT '2018-06-01' UNION SELECT '2018-07-01' UNION SELECT '2018-08-01' UNION SELECT '2018-09-01' UNION SELECT '2018-10-01' UNION 
+SELECT '2018-11-01' UNION SELECT '2018-12-01' UNION 
+SELECT '2019-01-01' UNION SELECT '2019-02-01' UNION SELECT '2019-03-01' UNION SELECT '2019-04-01' UNION SELECT '2019-05-01' UNION SELECT '2019-06-01' UNION SELECT '2019-07-01' UNION 
+SELECT '2019-08-01' UNION SELECT '2019-09-01' UNION SELECT '2019-10-01' UNION SELECT '2019-11-01' UNION SELECT '2019-12-01' UNION 
+SELECT '2020-01-01' UNION SELECT '2020-02-01' UNION SELECT '2020-03-01' UNION SELECT '2020-04-01' UNION SELECT '2020-05-01' UNION SELECT '2020-06-01' UNION SELECT '2020-07-01' UNION 
+SELECT '2020-08-01' UNION SELECT '2020-09-01' UNION SELECT '2020-10-01' UNION SELECT '2020-11-01' UNION SELECT '2020-12-01' UNION 
+SELECT '2021-01-01' UNION SELECT '2021-02-01' UNION SELECT '2021-03-01' UNION SELECT '2021-04-01' UNION SELECT '2021-05-01' UNION SELECT '2021-06-01' UNION SELECT '2021-07-01' UNION 
+SELECT '2021-08-01' UNION SELECT '2021-09-01' UNION SELECT '2021-10-01' UNION SELECT '2021-11-01' UNION SELECT '2021-12-01' UNION  
+SELECT '2022-01-01' UNION SELECT '2022-02-01' UNION SELECT '2022-03-01' UNION SELECT '2022-04-01' UNION SELECT '2022-05-01' UNION SELECT '2022-06-01' UNION SELECT '2022-07-01' UNION 
+SELECT '2022-08-01' UNION SELECT '2022-09-01' UNION SELECT '2022-10-01' UNION SELECT '2022-11-01' UNION SELECT '2022-12-01' UNION  
+SELECT '2023-01-01' UNION SELECT '2023-02-01' UNION SELECT '2023-03-01' UNION SELECT '2023-04-01' UNION SELECT '2023-05-01' UNION SELECT '2023-06-01' UNION SELECT '2023-07-01' UNION 
+SELECT '2023-08-01' UNION SELECT '2023-09-01' UNION SELECT '2023-10-01' UNION SELECT '2023-11-01' UNION SELECT '2023-12-01' UNION 
+SELECT '2024-01-01' UNION SELECT '2024-02-01' UNION SELECT '2024-03-01' UNION SELECT '2024-04-01' UNION SELECT '2024-05-01' UNION SELECT '2024-06-01' UNION SELECT '2024-07-01' UNION 
+SELECT '2024-08-01' UNION SELECT '2024-09-01' UNION SELECT '2024-10-01' UNION SELECT '2024-11-01' UNION SELECT '2024-12-01' UNION 
+SELECT '2025-01-01' UNION SELECT '2025-02-01' UNION SELECT '2025-03-01' UNION SELECT '2025-04-01' UNION SELECT '2025-05-01' UNION SELECT '2025-06-01' UNION SELECT '2025-07-01' UNION 
+SELECT '2025-08-01' UNION SELECT '2025-09-01' UNION SELECT '2025-10-01' UNION SELECT '2025-11-01' UNION SELECT '2025-12-01' 
+) AS dates 
+CROSS JOIN  
+(SELECT capteur.id_capteur, mesurer.id_gaz FROM capteur JOIN mesurer ON capteur.id_capteur = 
+mesurer.id_capteur WHERE capteur.id_capteur IN (7, 8, 9, 10, 11, 12, 13, 14)) AS c 
+CROSS JOIN  
+(SELECT @rownum := 1000) AS r; 
+
+/*ASSOCIATIONS ET LIAISONS FINALES 
+On lie les rapports aux mesures*/ 
+UPDATE mesures SET Id_Rapport = 2 WHERE id_mesures IN (3, 9, 15); 
+UPDATE mesures SET Id_Rapport = 4 WHERE id_mesures = 501; 
+UPDATE mesures SET Id_Rapport = 11 WHERE id_mesures = 504; 
+UPDATE mesures SET Id_Rapport = 12 WHERE id_mesures = 505; 
+/*Analyser (Qui analyse quoi)*/ 
+INSERT INTO analyser (ID_AD, Id_Mesures) VALUES 
+(3, 3), (3, 9), (3, 15),  
+(1, 22); 
