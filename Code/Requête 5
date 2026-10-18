@@ -1,0 +1,14 @@
+/*Concentrations de CH4 (en ppm) dans les régions « Ile-de-France », « Bretagne » et 
+« Occitanie » en mai et juin 2023*/
+SELECT m.Valeur_mesure, e.Nom_region, m.Date_mesure 
+FROM Nature_Gaz n 
+JOIN Gaz g ON g.Id_Nature_Gaz = n.Id_Nature_Gaz 
+JOIN Mesurer k ON g.Id_Gaz = k.Id_Gaz 
+JOIN Capteur c ON k.Id_Capteur = c.Id_Capteur 
+JOIN Mesures m ON c.Id_Capteur = m.Id_Capteur 
+JOIN Ville v ON c.Id_Ville = v.Id_Ville 
+JOIN Region e ON v.Id_Region = e.Id_Region 
+WHERE e.Nom_region IN ('Ile-de-France', 'Bretagne', 'Occitanie') 
+AND g.Formule_gaz = 'CH4' 
+AND m.Date_mesure BETWEEN '2023-05-01' AND '2023-06-30' 
+
